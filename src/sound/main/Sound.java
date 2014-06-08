@@ -17,12 +17,21 @@ import java.sql.Statement;
 
 public class Sound {
 
+	static {  
+        // load library  
+//        System.loadLibrary("JNI_Library");  
+        System.loadLibrary("hello");  
+    }  
+
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
 		System.out.println("JavaPlot");
 		
-		_D_7_JDBC();
+		_D_7_JNI();
+		
+//		_D_7_JDBC();
 		
 //		JavaPlot p = new JavaPlot();
 //        p.addPlot("sin(x)");
@@ -79,6 +88,13 @@ public class Sound {
 //        }
 		
 	}//public static void main(String[] args)
+
+	private static void _D_7_JNI() {
+		// TODO Auto-generated method stub
+
+		new Sound().hello("world");
+		
+	}
 
 	private static void _D_7_JDBC() {
 		// TODO Auto-generated method stub
@@ -160,5 +176,7 @@ public class Sound {
 				+ "]";
 		System.out.println(label + " " + message);
 	}
+	
+	public native void hello(String name);
 	
 }
