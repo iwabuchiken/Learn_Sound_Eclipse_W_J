@@ -92,7 +92,11 @@ public class Sound {
 	private static void _D_7_JNI() {
 		// TODO Auto-generated method stub
 
-		new Sound().hello("world");
+		String message = new Sound().hello("world");
+		
+		message(message,
+				Thread.currentThread().getStackTrace()[1].getLineNumber());
+		
 		
 	}
 
@@ -177,6 +181,8 @@ public class Sound {
 		System.out.println(label + " " + message);
 	}
 	
-	public native void hello(String name);
+	public native String hello(String name);
+	
+//	public native double[] get_Wave(String name);
 	
 }
