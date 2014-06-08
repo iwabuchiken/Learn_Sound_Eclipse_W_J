@@ -97,6 +97,19 @@ public class Sound {
 		message(message,
 				Thread.currentThread().getStackTrace()[1].getLineNumber());
 		
+		double[] data = new Sound().get_Wave("world");
+		
+		message = "data[0] = " + data[0];
+		message(message,
+				Thread.currentThread().getStackTrace()[1].getLineNumber());
+		
+		// Console output
+		//		JavaPlot
+		//		Hello world
+		//		[Sound.java : message : 98] world => received
+		//		[Sound.java : message : 104] data[0] = 0.3
+		//		[Sound.java : message : 48] done
+
 		
 	}
 
@@ -183,6 +196,6 @@ public class Sound {
 	
 	public native String hello(String name);
 	
-//	public native double[] get_Wave(String name);
+	public native double[] get_Wave(String name);
 	
 }
