@@ -36,7 +36,8 @@ public class Sound {
 
 		System.out.println("JavaPlot");
 
-		new Sound()._D_7_v_4_Plot_Data_v2();
+		new Sound()._D_7_v_4_Plot_Data_v3();
+//		new Sound()._D_7_v_4_Plot_Data_v2();
 //		new Sound()._D_7_v_4_Plot_Data();
 //		_D_7_v_4_EachChannelData();
 //		_D_7_v_4_WavFile();
@@ -507,6 +508,133 @@ public class Sound {
 			num_of_display = num_of_display / 2;
 			
 			double[][] data = _prep_PlotData(buf_L, num_of_display);
+			
+			////////////////////////////////
+			
+			// Plot
+			
+			////////////////////////////////
+			String title = "Frame = " + num_of_display;
+			_plot(data, title);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (WavFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		
+	}//_D_7_v_4_EachChannelData()
+	
+	private void
+	_D_7_v_4_Plot_Data_v3() {
+		// TODO Auto-generated method stub
+//		String fname_Wav = "2.wav";
+		String fname_Wav = "a.wav";
+		
+		String fpath_Wav = StringUtils.join(
+				new String[]{
+						"audio",
+						fname_Wav
+				}, File.separator);
+		
+		File audioFile_Src = new File(fpath_Wav);
+		
+		WavFile wavFile = null;
+		
+		try {
+			
+			wavFile = WavFile.openWavFile(audioFile_Src);
+			
+			String message = "File => opened: " + audioFile_Src.getAbsolutePath();
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			// display
+			wavFile.display();
+			
+			////////////////////////////////
+			
+			// Setup: vars
+			
+			////////////////////////////////
+			int start = 0;
+			int num_of_display = (int) wavFile.getNumFrames();
+			
+			int framesRead;
+			int numChannels = wavFile.getNumChannels();
+			long num_Frames = wavFile.getNumFrames();
+			
+			double[] buf = new double[(int) num_Frames * numChannels];
+			double[] buf_L = new double[(int) num_Frames];
+			double[] buf_R = new double[(int) num_Frames];
+			
+			////////////////////////////////
+			
+			// Read: frames
+			
+			////////////////////////////////
+			framesRead = wavFile.readFrames(buf, (int) wavFile.getNumFrames());
+			
+			message = "framesRead = " + framesRead;
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			message = "num_Frames = " + num_Frames;
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			////////////////////////////////
+			
+			// Close: wav
+			
+			////////////////////////////////
+			wavFile.close();
+			
+			message = "File => closed: " + audioFile_Src.getAbsolutePath();
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			////////////////////////////////
+			
+			// Process: data
+			
+			////////////////////////////////
+//			for (int i = start, j = 0; i < start + num_of_display; i += 2, j ++) {
+//				
+//				// buf		=> 10000 ~ 10009
+//				// buf_L	=> 0 ~ 9
+//				// buf_R	=> 0 ~ 9
+//				buf_L[j] = buf[i];
+//				buf_R[j] = buf[i + 1];
+//				
+//			}
+//			
+//			message = "Processing => done";
+//			message(message,
+//					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			
+//			////////////////////////////////
+//			
+//			// Display: data
+//			
+//			////////////////////////////////
+////			start = 10000; num_of_display = 10;
+//			
+////			_display_Data(buf, buf_L, buf_R, start, num_of_display);
+//			
+			////////////////////////////////
+			
+			// Prep: plot data
+			
+			////////////////////////////////
+			//REF multi http://stackoverflow.com/questions/12231453/creating-two-dimensional-array answered Sep 1 '12 at 21:15
+			
+//			num_of_display = num_of_display / 2;
+			
+			double[][] data = _prep_PlotData(buf, num_of_display / 100);
 			
 			////////////////////////////////
 			
