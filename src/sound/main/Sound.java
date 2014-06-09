@@ -7,7 +7,10 @@ import java.util.Map;
 import java.util.Set;
 import java.sql.*;
 
+import ac.essex.graphing.Demo;
+
 import com.panayotis.gnuplot.JavaPlot;
+import com.panayotis.gnuplot.terminal.ImageTerminal;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,6 +18,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.io.*;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -36,28 +41,142 @@ public class Sound {
 
 		System.out.println("JavaPlot");
 
-		new Sound()._D_7_v_4_Plot_Data_v3();
-//		new Sound()._D_7_v_4_Plot_Data_v2();
-//		new Sound()._D_7_v_4_Plot_Data();
-//		_D_7_v_4_EachChannelData();
-//		_D_7_v_4_WavFile();
-//		_D_7_v_4_Check_FilePath();
-		
-//		WavFile wFile;
-//		wavFiles.WavFile wFile;
-		
-//		_D_7_JNI();
-		
-//		_D_7_Initial_Codes();
-//		_D_7_JDBC();
+		new Sound()._D_7_v_5_Wave_to_PNG();
+//		new Sound()._D_7_v_4_Plot_Data_v3();
 		
 		String message = "done";
 		message(message,
 				Thread.currentThread().getStackTrace()[1].getLineNumber());
 		
-
-		
 	}//public static void main(String[] args)
+
+	/******************************
+		REF http://stackoverflow.com/questions/9806354/how-make-output-png-file-in-javaplot answered Apr 24 '12 at 12:55
+	 ******************************/
+	private void _D_7_v_5_Wave_to_PNG() {
+		// TODO Auto-generated method stub
+		
+		double[][] data = _get_Wavedata();
+		
+		ImageTerminal png = new ImageTerminal();
+		
+		String fname_PNG = "image_"
+						+ Methods.get_TimeLabel(Methods.getMillSeconds_now())
+						+ ".png";
+		
+		File file = new File("audio", fname_PNG);
+		
+		try {
+			
+			file.createNewFile();
+			png.processOutput(new FileInputStream(file));
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		////////////////////////////////
+
+		// plot
+
+		////////////////////////////////
+		JavaPlot p = new JavaPlot();
+	    p.setTerminal(png);
+	    
+	    p.addPlot(data);
+	    
+	    p.plot();
+	    
+	    try {
+	        ImageIO.write(png.getImage(), "png", file);
+	    } catch (IOException ex) {
+	        System.err.print(ex);
+	    }
+		
+	}
+
+	private double[][] _get_Wavedata() {
+		// TODO Auto-generated method stub
+		String fname_Wav = "a.wav";
+		
+		double[][] data = null;
+		
+		String fpath_Wav = StringUtils.join(
+				new String[]{
+						"audio",
+						fname_Wav
+				}, File.separator);
+		
+		File audioFile_Src = new File(fpath_Wav);
+		
+		WavFile wavFile = null;
+		
+		try {
+			
+			wavFile = WavFile.openWavFile(audioFile_Src);
+			
+			String message = "File => opened: " + audioFile_Src.getAbsolutePath();
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			// display
+			wavFile.display();
+			
+			////////////////////////////////
+			
+			// Setup: vars
+			
+			////////////////////////////////
+			int start = 0;
+			int num_of_display = (int) wavFile.getNumFrames();
+			
+			int framesRead;
+			int numChannels = wavFile.getNumChannels();
+			long num_Frames = wavFile.getNumFrames();
+			
+			double[] buf = new double[(int) num_Frames * numChannels];
+			
+			////////////////////////////////
+			
+			// Read: frames
+			
+			////////////////////////////////
+			framesRead = wavFile.readFrames(buf, (int) wavFile.getNumFrames());
+			
+//			message = "framesRead = " + framesRead;
+//			message(message,
+//					Thread.currentThread().getStackTrace()[1].getLineNumber());
+//			
+//			message = "num_Frames = " + num_Frames;
+//			message(message,
+//					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			////////////////////////////////
+			
+			// Close: wav
+			
+			////////////////////////////////
+			wavFile.close();
+			
+			message = "File => closed: " + audioFile_Src.getAbsolutePath();
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			data = _prep_PlotData(buf, num_of_display / 100);
+//			double[][] data = _prep_PlotData(buf, num_of_display / 100);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (WavFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+			
+		return data;
+	}
 
 	private static void
 	_D_7_v_4_EachChannelData() {
@@ -636,13 +755,19 @@ public class Sound {
 			
 			double[][] data = _prep_PlotData(buf, num_of_display / 100);
 			
-			////////////////////////////////
+			//log
+			Methods.write_Log(
+					"all done", 
+					"Sound.java", 
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
 			
-			// Plot
-			
-			////////////////////////////////
-			String title = "Frame = " + num_of_display;
-			_plot(data, title);
+//			////////////////////////////////
+//			
+//			// Plot
+//			
+//			////////////////////////////////
+//			String title = "Frame = " + num_of_display;
+//			_plot(data, title);
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -725,7 +850,7 @@ public class Sound {
 		p.addPlot(data);
 //		p.addPlot("sin(x)*y");
 		p.plot();
-
+		
 	}
 
 	private static void _D_7_v_4_WavFile() {
@@ -786,7 +911,6 @@ public class Sound {
 			message = "File => closed: " + audioFile_Src.getAbsolutePath();
 			message(message,
 					Thread.currentThread().getStackTrace()[1].getLineNumber());
-			
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
