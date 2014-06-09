@@ -36,8 +36,9 @@ public class Sound {
 
 		System.out.println("JavaPlot");
 		
+		_D_7_v_4_EachChannelData();
+//		_D_7_v_4_WavFile();
 //		_D_7_v_4_Check_FilePath();
-		_D_7_v_4_WavFile();
 		
 //		WavFile wFile;
 //		wavFiles.WavFile wFile;
@@ -55,9 +56,11 @@ public class Sound {
 		
 	}//public static void main(String[] args)
 
-	private static void _D_7_v_4_WavFile() {
+	private static void
+	_D_7_v_4_EachChannelData() {
 		// TODO Auto-generated method stub
-		String fname_Wav = "a.wav";
+		String fname_Wav = "2.wav";
+//		String fname_Wav = "a.wav";
 		
 		String fpath_Wav = StringUtils.join(
 				new String[]{
@@ -77,6 +80,153 @@ public class Sound {
 			message(message,
 					Thread.currentThread().getStackTrace()[1].getLineNumber());
 			
+			// display
+			wavFile.display();
+			
+			////////////////////////////////
+
+			// Setup: vars
+
+			////////////////////////////////
+			int start = 10000;
+			int num_of_display = 10;
+			
+			int framesRead;
+			int numChannels = wavFile.getNumChannels();
+			long num_Frames = wavFile.getNumFrames();
+			
+			double[] buf = new double[(int) num_Frames * numChannels];
+			double[] buf_L = new double[(int) num_Frames];
+			double[] buf_R = new double[(int) num_Frames];
+
+			////////////////////////////////
+
+			// Read: frames
+
+			////////////////////////////////
+			framesRead = wavFile.readFrames(buf, (int) wavFile.getNumFrames());
+			
+			message = "framesRead = " + framesRead;
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+
+			////////////////////////////////
+
+			// Close: wav
+
+			////////////////////////////////
+			wavFile.close();
+			
+			message = "File => closed: " + audioFile_Src.getAbsolutePath();
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			////////////////////////////////
+
+			// Process: data
+
+			////////////////////////////////
+			for (int i = 0; i < num_Frames; i++) {
+				
+				buf_L[i] = buf[i];
+				buf_R[i] = buf[i + 1];
+				
+				
+//				//REF format http://stackoverflow.com/questions/47045/sprintf-equivalent-in-java answered Sep 5 '08 at 23:06
+//				message = String.format(
+//							"buf[%d] = %f / buf_L[%d] = %f / buf_R[%d] = %f",
+//							i, buf[i], i, buf_L[i], i, buf_R[i]);
+//				message(message,
+//						Thread.currentThread().getStackTrace()[1]
+//								.getLineNumber());
+			}
+			
+			message = "Processing => done";
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			
+			////////////////////////////////
+
+			// Display: data
+
+			////////////////////////////////
+//			int start = 0;
+//			int num_of_display = 10;
+			
+			for (int i = start; i < start + num_of_display; i++) {
+				
+				//REF format http://stackoverflow.com/questions/47045/sprintf-equivalent-in-java answered Sep 5 '08 at 23:06
+				message = String.format(
+							"buf[%d] = %f / buf_L[%d] = %f / buf_R[%d] = %f",
+							i, buf[i], i, buf_L[i], i, buf_R[i]);
+				message(message,
+						Thread.currentThread().getStackTrace()[1]
+								.getLineNumber());
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (WavFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		
+	}//_D_7_v_4_EachChannelData()
+
+	private static void _D_7_v_4_WavFile() {
+		// TODO Auto-generated method stub
+		String fname_Wav = "2.wav";
+//		String fname_Wav = "a.wav";
+		
+		String fpath_Wav = StringUtils.join(
+				new String[]{
+					"audio",
+					fname_Wav
+				}, File.separator);
+		
+		File audioFile_Src = new File(fpath_Wav);
+		
+		WavFile wavFile = null;
+		
+		try {
+			
+			wavFile = WavFile.openWavFile(audioFile_Src);
+			
+			String message = "File => opened: " + audioFile_Src.getAbsolutePath();
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			// display
+			wavFile.display();
+			
+			//
+			int offset = 300000;
+			int num_of_samples = 10;
+			int num_of_frames = 100;
+			
+			int framesRead;
+			int numChannels = wavFile.getNumChannels();
+			double[] buffer = new double[(int) wavFile.getNumFrames() * numChannels];
+//			double[] buffer = new double[num_of_frames * numChannels];
+			
+			framesRead = wavFile.readFrames(buffer, (int) wavFile.getNumFrames());
+			
+			message = "framesRead = " + framesRead;
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			
+			for (int i = 0 + offset; i < num_of_samples + offset; i++) {
+				
+				//REF format http://stackoverflow.com/questions/47045/sprintf-equivalent-in-java answered Sep 5 '08 at 23:06
+				message = String.format("double[%d] = %f", i, buffer[i]);
+				message(message,
+						Thread.currentThread().getStackTrace()[1]
+								.getLineNumber());
+				
+			}
 			
 			wavFile.close();
 			
@@ -110,6 +260,7 @@ public class Sound {
 		
 		File f = new File(fname_Wav);
 		
+		//REF http://docs.oracle.com/javase/tutorial/essential/io/charstreams.html
 		FileWriter fw = null;
 		
 		try {
