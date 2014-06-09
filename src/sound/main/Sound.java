@@ -36,7 +36,8 @@ public class Sound {
 
 		System.out.println("JavaPlot");
 
-		new Sound()._D_7_v_4_Plot_Data();
+		new Sound()._D_7_v_4_Plot_Data_v2();
+//		new Sound()._D_7_v_4_Plot_Data();
 //		_D_7_v_4_EachChannelData();
 //		_D_7_v_4_WavFile();
 //		_D_7_v_4_Check_FilePath();
@@ -395,6 +396,209 @@ public class Sound {
 		}		
 		
 	}//_D_7_v_4_EachChannelData()
+	
+	private void
+	_D_7_v_4_Plot_Data_v2() {
+		// TODO Auto-generated method stub
+		String fname_Wav = "2.wav";
+//		String fname_Wav = "a.wav";
+		
+		String fpath_Wav = StringUtils.join(
+				new String[]{
+						"audio",
+						fname_Wav
+				}, File.separator);
+		
+		File audioFile_Src = new File(fpath_Wav);
+		
+		WavFile wavFile = null;
+		
+		try {
+			
+			wavFile = WavFile.openWavFile(audioFile_Src);
+			
+			String message = "File => opened: " + audioFile_Src.getAbsolutePath();
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			// display
+			wavFile.display();
+			
+			////////////////////////////////
+			
+			// Setup: vars
+			
+			////////////////////////////////
+			int start = 0;
+			int num_of_display = 40000;
+			
+			int framesRead;
+			int numChannels = wavFile.getNumChannels();
+			long num_Frames = wavFile.getNumFrames();
+			
+			double[] buf = new double[(int) num_Frames * numChannels];
+			double[] buf_L = new double[(int) num_Frames];
+			double[] buf_R = new double[(int) num_Frames];
+			
+			////////////////////////////////
+			
+			// Read: frames
+			
+			////////////////////////////////
+			framesRead = wavFile.readFrames(buf, (int) wavFile.getNumFrames());
+			
+			message = "framesRead = " + framesRead;
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			////////////////////////////////
+			
+			// Close: wav
+			
+			////////////////////////////////
+			wavFile.close();
+			
+			message = "File => closed: " + audioFile_Src.getAbsolutePath();
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			////////////////////////////////
+			
+			// Process: data
+			
+			////////////////////////////////
+//			for (int i = 0; i < num_Frames; i += 2) {
+//				for (int i = 0; i < num_Frames; i++) {
+			
+//			start = 10000; num_of_display = 10;
+			
+			for (int i = start, j = 0; i < start + num_of_display; i += 2, j ++) {
+//				for (int i = 0, j = 0; i < num_Frames; i += 2, j ++) {
+				
+				// buf		=> 10000 ~ 10009
+				// buf_L	=> 0 ~ 9
+				// buf_R	=> 0 ~ 9
+				buf_L[j] = buf[i];
+				buf_R[j] = buf[i + 1];
+				
+			}
+			
+			message = "Processing => done";
+			message(message,
+					Thread.currentThread().getStackTrace()[1].getLineNumber());
+			
+			
+			////////////////////////////////
+			
+			// Display: data
+			
+			////////////////////////////////
+//			start = 10000; num_of_display = 10;
+			
+//			_display_Data(buf, buf_L, buf_R, start, num_of_display);
+			
+			////////////////////////////////
+			
+			// Prep: plot data
+			
+			////////////////////////////////
+			//REF multi http://stackoverflow.com/questions/12231453/creating-two-dimensional-array answered Sep 1 '12 at 21:15
+			
+			num_of_display = num_of_display / 2;
+			
+			double[][] data = _prep_PlotData(buf_L, num_of_display);
+			
+			////////////////////////////////
+			
+			// Plot
+			
+			////////////////////////////////
+			String title = "Frame = " + num_of_display;
+			_plot(data, title);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (WavFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		
+	}//_D_7_v_4_EachChannelData()
+
+	private void _display_Data(double[] buf, double[] buf_L, double[] buf_R,
+			int start, int num_of_display) {
+		// TODO Auto-generated method stub
+		for (int i = start, j = 0; i < start + num_of_display; i++, j++) {
+			
+			//REF format http://stackoverflow.com/questions/47045/sprintf-equivalent-in-java answered Sep 5 '08 at 23:06
+			String message = String.format(
+					"buf[%d] = %f / buf_L[%d] = %f / buf_R[%d] = %f",
+					i, buf[i], j, buf_L[j], j, buf_R[j]);
+			message(message,
+					Thread.currentThread().getStackTrace()[1]
+							.getLineNumber());
+		}
+
+	}
+
+	private double[][] _prep_PlotData
+	(double[] buf_L, int num_of_display) {
+		// TODO Auto-generated method stub
+		int count = 0;
+		int start = 0;
+//		int num_of_display = 5;
+		
+		
+		
+		double[][] data = new double[(int) num_of_display][2];
+		
+		for (int i = start; i < start + num_of_display; i++) {
+//			for (int i = 361000; i < 36110; i++) {
+//			for (int i = 361000; i < buf_R.length; i++) {
+			
+			data[count][0] = count;
+			data[count][1] = buf_L[i];
+			
+			count ++;
+			
+		}
+		
+		start = 0; num_of_display = 5;
+		
+		for (int i = start; i < start + num_of_display; i++) {
+			
+			String message = String.format(
+					"data[%d][0] = %f / data[%d][1] = %f", 
+					i, data[i][0], i, data[i][1]);
+			
+			message(message,
+					Thread.currentThread().getStackTrace()[1]
+							.getLineNumber());
+			
+		}
+		
+		return data;
+		
+	}//private void _prep_PlotData
+
+	private void _plot(double[][] data, String title) {
+		// TODO Auto-generated method stub
+		JavaPlot p = new JavaPlot();
+//		p.addPlot("sin(x)");
+//		p.plot();
+//			JavaPlot p = new JavaPlot(true);
+		
+		p.setTitle(
+				Thread.currentThread().getStackTrace()[1].getFileName()
+				+ "(" + title
+				+ ")");
+		
+		p.addPlot(data);
+//		p.addPlot("sin(x)*y");
+		p.plot();
+
+	}
 
 	private static void _D_7_v_4_WavFile() {
 		// TODO Auto-generated method stub
